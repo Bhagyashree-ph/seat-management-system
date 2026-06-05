@@ -30,7 +30,8 @@ public class SecurityConfig {
                             "/auth/**",
                             "/branches/**",
                             "/floors/**",
-                            "/test/**"
+                            "/test/**",
+                            "/api/v1/auth/microsoft/**"
                     ).permitAll()
                     .anyRequest().authenticated()
             );
