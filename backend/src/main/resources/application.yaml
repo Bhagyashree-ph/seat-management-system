@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: seatmanagement
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/seat_management
+  security:
+    oauth2:
+      client:
+        registration:
+          microsoft:
+            client-id: 580087f9-acfe-4de8-ba36-1f574dd9ad8b
+            client-secret: caf39796-438a-4f3e-a2cc-918dc6d62b80
+            scope:
+              - openid
+              - profile
+              - email
+              - User.Read
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          microsoft:
+            authorization-uri: https://login.microsoftonline.com/YOUR_TENANT_ID/oauth2/v2.0/authorize
+            token-uri: https://login.microsoftonline.com/YOUR_TENANT_ID/oauth2/v2.0/token
+            user-info-uri: https://graph.microsoft.com/oidc/userinfo
+            user-name-attribute: sub
+
+server:
+  port: 8085
+  servlet:
+    context-path: /api/seatmgmt
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+zoho:
+  accounts-url: ${ZOHO_ACCOUNTS_URL}
+  people-base-url: ${ZOHO_PEOPLE_BASE_URL}
+  client-id: ${ZOHO_CLIENT_ID}
+  client-secret: ${ZOHO_CLIENT_SECRET}
+  refresh-token: ${ZOHO_REFRESH_TOKEN}
+  grant-type: refresh_token
+  token-url:  ${ZOHO_TOKEN_URL}
+
+employee:
+  schedule:
+    sync:
+      cron: 0 0 2 * * ? # Every day at 2 AM
+      zone: "Asia/Kolkata"

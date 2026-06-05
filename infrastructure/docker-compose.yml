@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+
+  mongodb:
+    image: mongo:7
+    container_name: seat-management-mongodb
+
+    ports:
+      - "27017:27017"
+
+    environment:
+      MONGO_INITDB_DATABASE: seat_management
+
+    volumes:
+      - mongodb_data:/data/db
+
+  redis:
+    image: redis:7
+    container_name: seat-management-redis
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mongodb_data:
+  redis_data:
