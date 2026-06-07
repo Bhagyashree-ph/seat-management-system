@@ -2,6 +2,7 @@ package com.iexceed.seatmanagement.employees.mapper;
 
 import com.iexceed.seatmanagement.employees.dto.zoho.ZohoEmployeeRecordDTO;
 import com.iexceed.seatmanagement.employees.entity.Employee;
+import com.iexceed.seatmanagement.employees.enums.EmployeeSource;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -50,7 +51,7 @@ public class EmployeeMapper {
                 .profilePhotoUrl(dto.getProfilePhotoUrl())
                 .active(isActiveEmployee(dto.getEmploymentStatus()))
                 .deleted(false)
-                .source("ZOHO")
+                .source(EmployeeSource.ZOHO)
                 .zohoCreatedTime(parseInstant(dto.getCreatedTime()))
                 .zohoModifiedTime(parseInstant(dto.getModifiedTime()))
                 .lastSyncedAt(Instant.now())

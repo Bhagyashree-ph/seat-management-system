@@ -1,0 +1,19 @@
+package com.iexceed.seatmanagement.auth.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class AuthResponse {
+
+    private String token;
+    private String employeeCode;
+    private String email;
+    private String displayName;
+
+}

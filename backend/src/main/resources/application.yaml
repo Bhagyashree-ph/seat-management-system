@@ -43,6 +43,16 @@ zoho:
   grant-type: refresh_token
   token-url:  ${ZOHO_TOKEN_URL}
 
+microsoft:
+  tenant-id: ${MICROSOFT_TENANT_ID}
+  client-id: ${MICROSOFT_CLIENT_ID}
+  client-secret: ${MICROSOFT_CLIENT_SECRET}
+  redirect-uri: ${MICROSOFT_REDIRECT_URI}
+
+jwt:
+  secret: seatmanagementsecretkeyseatmanagementsecretkey
+  expiration: 36000000
+
 employee:
   schedule:
     sync:
