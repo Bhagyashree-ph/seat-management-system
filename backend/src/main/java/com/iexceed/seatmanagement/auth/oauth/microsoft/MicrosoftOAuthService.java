@@ -5,12 +5,16 @@ import com.iexceed.seatmanagement.auth.dto.CurrentUserResponse;
 import com.iexceed.seatmanagement.auth.oauth.microsoft.config.MicrosoftOAuthProperties;
 import com.iexceed.seatmanagement.employees.entity.Employee;
 import com.iexceed.seatmanagement.employees.repository.EmployeeRepository;
+import com.iexceed.seatmanagement.roles.enums.RoleCode;
+import com.iexceed.seatmanagement.roles.service.EmployeeRoleService;
 import com.iexceed.seatmanagement.security.jwt.JwtUtil;
 import com.iexceed.seatmanagement.auth.exceptions.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +24,7 @@ public class MicrosoftOAuthService {
     private final EmployeeRepository employeeRepository;
     private final JwtUtil jwtUtil;
     private final MicrosoftOAuthProperties microsoftOAuthProperties;
+    private final EmployeeRoleService employeeRoleService;
 
     public AuthResponse authenticate(String code) {
 
@@ -43,7 +48,12 @@ public class MicrosoftOAuthService {
             throw new EmployeeDeletedException("Employee is deleted");
         }
 
-        String token = jwtUtil.generateToken(employeeEntity.getEmployeeCode(), employeeEntity.getEmail());
+        employeeRoleService.assignDefaultRole(employeeEntity.getId());
+        List<String> roles = employeeRoleService.getEmployeeRoles(employeeEntity.getId())
+                .stream()
+                .map(RoleCode::name)
+                .toList();
+        String token = jwtUtil.generateToken(employeeEntity.getEmployeeCode(), employeeEntity.getEmail(), roles);
 
         return AuthResponse.builder()
                 .token(token)
