@@ -1,0 +1,16 @@
+[
+  {
+    "employeeCode":"SYS001",
+    "displayName":"Primary Super Admin",
+    "email":"superadmin1@system.local",
+    "username":"superadmin1",
+    "password": "${SYSTEM_ADMIN_1_PASSWORD}"
+  },
+  {
+    "employeeCode":"SYS002",
+    "displayName":"Secondary Super Admin",
+    "email":"superadmin2@system.local",
+    "username":"superadmin2",
+    "password": "${SYSTEM_ADMIN_2_PASSWORD}"
+  }
+]

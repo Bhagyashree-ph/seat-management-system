@@ -1,11 +1,9 @@
 package com.iexceed.seatmanagement.exceptions;
 
-import com.iexceed.seatmanagement.auth.exceptions.EmployeeDeletedException;
-import com.iexceed.seatmanagement.auth.exceptions.EmployeeInactiveException;
-import com.iexceed.seatmanagement.auth.exceptions.EmployeeNotFoundException;
-import com.iexceed.seatmanagement.auth.exceptions.MicrosoftAuthenticationException;
+import com.iexceed.seatmanagement.auth.exceptions.*;
 import com.iexceed.seatmanagement.common.response.ApiResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -57,6 +55,50 @@ public class GlobalExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AccountLockedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAccountLocked(
+            AccountLockedException ex) {
+        ApiResponse<Object> response = ApiResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.LOCKED);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ApiResponse<Object>> handleInvalidCredentialsException(
+            InvalidCredentialsException ex) {
+        ApiResponse<Object> response = ApiResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AccountDisabledException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAccountDisabledException(
+            AccountDisabledException ex) {
+        ApiResponse<Object> response = ApiResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(UserRoleNotAssignedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleUserRoleNotAssignedException(
+            UserRoleNotAssignedException ex) {
+        ApiResponse<Object> response = ApiResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(RuntimeException.class)

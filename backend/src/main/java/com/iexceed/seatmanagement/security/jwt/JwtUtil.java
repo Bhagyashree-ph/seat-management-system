@@ -10,18 +10,25 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
+@SuppressWarnings("unchecked")
 public class JwtUtil {
 
     private final JwtProperties jwtProperties;
 
-    public String generateToken(String username) {
+    public String generateToken(String username, List<String> roles) {
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", username);
+        claims.put("roles", roles);
 
         return Jwts.builder()
+                .claims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(
@@ -31,11 +38,12 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String generateToken(String employeeId, String email) {
+    public String generateToken(String employeeId, String email, List<String> roles) {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("employeeId", employeeId);
         claims.put("email", email);
+        claims.put("roles", roles);
 
         return Jwts.builder()
                 .claims(claims)
@@ -83,6 +91,10 @@ public class JwtUtil {
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         Claims claims = extractClaims(token);
         return claimsResolver.apply(claims);
+    }
+
+    public List<String> extractRoles(String token) {
+        return extractClaim(token, claims -> claims.get("roles", List.class));
     }
 
     private Key getSigningKey() {

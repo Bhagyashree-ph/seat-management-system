@@ -1,5 +1,6 @@
 package com.iexceed.seatmanagement.employees.entity;
 
+import com.iexceed.seatmanagement.employees.enums.EmployeeSource;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -107,7 +108,7 @@ public class Employee {
 
     private Boolean deleted;
 
-    private String source;
+    private EmployeeSource source;
 
     private Instant zohoCreatedTime;
 
