@@ -1,4 +1,4 @@
-package com.iexceed.seatmanagement.branches.service.impl.controller;
+package com.iexceed.seatmanagement.branches.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iexceed.seatmanagement.branches.controller.BranchController;
