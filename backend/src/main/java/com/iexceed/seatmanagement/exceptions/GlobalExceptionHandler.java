@@ -1,6 +1,8 @@
 package com.iexceed.seatmanagement.exceptions;
 
 import com.iexceed.seatmanagement.auth.exceptions.*;
+import com.iexceed.seatmanagement.branches.exceptions.BranchAlreadyExistsException;
+import com.iexceed.seatmanagement.branches.exceptions.BranchNotFoundException;
 import com.iexceed.seatmanagement.common.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -99,6 +101,32 @@ public class GlobalExceptionHandler {
                 .data(null)
                 .build();
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(BranchNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleBranchNotFoundException(
+            BranchNotFoundException ex) {
+
+        ApiResponse<Object> response = ApiResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(BranchAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Object>> handleBranchAlreadyExistsException(
+            BranchAlreadyExistsException ex) {
+
+        ApiResponse<Object> response = ApiResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(RuntimeException.class)
