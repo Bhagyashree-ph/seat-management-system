@@ -24,6 +24,7 @@ public class Branch extends BaseAuditEntity {
     private String branchName;
     private String city;
     private String address;
+    @Indexed
     private BranchStatus status;
     private String timezone;
 
