@@ -1,5 +1,11 @@
 package com.iexceed.seatmanagement.branches.service.impl;
 
+import com.iexceed.seatmanagement.audit.entity.FieldChange;
+import com.iexceed.seatmanagement.audit.enums.AuditAction;
+import com.iexceed.seatmanagement.audit.enums.EntityType;
+import com.iexceed.seatmanagement.audit.service.AuditService;
+import com.iexceed.seatmanagement.audit.util.AuditDiffUtil;
+import com.iexceed.seatmanagement.audit.util.AuditObjectCloneUtil;
 import com.iexceed.seatmanagement.branches.dto.request.CreateBranchRequest;
 import com.iexceed.seatmanagement.branches.dto.request.UpdateBranchRequest;
 import com.iexceed.seatmanagement.branches.dto.response.BranchResponse;
@@ -11,18 +17,21 @@ import com.iexceed.seatmanagement.branches.mapper.BranchMapper;
 import com.iexceed.seatmanagement.branches.repository.BranchRepository;
 import com.iexceed.seatmanagement.branches.service.BranchService;
 import com.iexceed.seatmanagement.common.utils.AuditUtil;
+import com.iexceed.seatmanagement.security.util.CurrentUserUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class BranchServiceImpl implements BranchService {
 
     private final BranchRepository branchRepository;
+    private final AuditService auditService;
 
     @Override
     public BranchResponse createBranch(CreateBranchRequest request) {
@@ -33,8 +42,9 @@ public class BranchServiceImpl implements BranchService {
             throw new BranchAlreadyExistsException("Branch name already exists");
         }
         Branch branch = BranchMapper.toEntity(request);
-        AuditUtil.setCreateAudit(branch, "SYSTEM");
+        AuditUtil.setCreateAudit(branch);
         Branch savedBranch = branchRepository.save(branch);
+        auditService.log(EntityType.BRANCH, savedBranch.getId(), AuditAction.CREATE_BRANCH, Map.of());
         return BranchMapper.toResponse(savedBranch);
     }
 
@@ -56,11 +66,12 @@ public class BranchServiceImpl implements BranchService {
     public void deactivateBranch(String branchId) {
         Branch branch = branchRepository.findByIdAndDeletedFalse(branchId)
                 .orElseThrow(() -> new BranchNotFoundException("Branch not found with id: " + branchId));
+        Branch beforeDeactivation = AuditObjectCloneUtil.deepCopy(branch, Branch.class);
         branch.setStatus(BranchStatus.INACTIVE);
-        branch.setDeleted(true);
-        branch.setUpdatedAt(LocalDateTime.now());
-        branch.setUpdatedBy("SYSTEM");
-        branchRepository.save(branch);
+        AuditUtil.setDeleteAudit(branch);
+        Branch deactivatedBranch = branchRepository.save(branch);
+        Map<String, FieldChange> changes = AuditDiffUtil.compare(beforeDeactivation, deactivatedBranch);
+        auditService.log(EntityType.BRANCH, deactivatedBranch.getId(), AuditAction.DELETE_BRANCH, changes);
     }
 
     @Override
@@ -70,6 +81,7 @@ public class BranchServiceImpl implements BranchService {
         if (!branch.getBranchName().equalsIgnoreCase(updateBranchRequest.getBranchName()) && branchRepository.existsByBranchNameAndDeletedFalse(updateBranchRequest.getBranchName())) {
             throw new BranchAlreadyExistsException("Branch already exists");
         }
+        Branch beforeUpdate = AuditObjectCloneUtil.deepCopy(branch, Branch.class);
         try {
             ZoneId.of(updateBranchRequest.getTimezone());
         } catch (Exception e) {
@@ -80,9 +92,10 @@ public class BranchServiceImpl implements BranchService {
         branch.setAddress(updateBranchRequest.getAddress());
         branch.setTimezone(updateBranchRequest.getTimezone());
         branch.setStatus(updateBranchRequest.getStatus());
-
-        AuditUtil.setUpdateAudit(branch, "SYSTEM");
-
-        return BranchMapper.toResponse(branchRepository.save(branch));
+        AuditUtil.setUpdateAudit(branch);
+        Branch savedBranch = branchRepository.save(branch);
+        Map<String, FieldChange> changes = AuditDiffUtil.compare(beforeUpdate, savedBranch);
+        auditService.log(EntityType.BRANCH, savedBranch.getId(), AuditAction.UPDATE_BRANCH, changes);
+        return BranchMapper.toResponse(savedBranch);
     }
 }
