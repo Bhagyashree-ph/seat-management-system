@@ -3,7 +3,11 @@ package com.iexceed.seatmanagement.exceptions;
 import com.iexceed.seatmanagement.auth.exceptions.*;
 import com.iexceed.seatmanagement.branches.exceptions.BranchAlreadyExistsException;
 import com.iexceed.seatmanagement.branches.exceptions.BranchNotFoundException;
+import com.iexceed.seatmanagement.common.exceptions.DuplicateResourceException;
+import com.iexceed.seatmanagement.common.exceptions.ResourceNotFoundException;
 import com.iexceed.seatmanagement.common.response.ApiResponse;
+import com.iexceed.seatmanagement.floors.entity.Floor;
+import com.iexceed.seatmanagement.floors.exceptions.FloorNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +17,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        ApiResponse<Object> response = ApiResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(EmployeeNotFoundException.class)
     public ResponseEntity<ApiResponse<Object>> handleEmployeeNotFoundException(
@@ -127,6 +141,28 @@ public class GlobalExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ApiResponse<Object>> handleDuplicateResourceException(
+            DuplicateResourceException ex) {
+        ApiResponse<Object> response = ApiResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(FloorNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleFloorNotFoundException(
+            FloorNotFoundException ex) {
+        ApiResponse<Object> response = ApiResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(RuntimeException.class)

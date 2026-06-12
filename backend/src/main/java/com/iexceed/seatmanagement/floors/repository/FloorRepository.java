@@ -6,10 +6,25 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface FloorRepository
-        extends MongoRepository<Floor, String> {
+public interface FloorRepository extends MongoRepository<Floor, String> {
+
+    Optional<Floor> findByIdAndDeletedFalse(String id);
+
     List<Floor> findByDeletedFalse();
-    boolean existsByFloorCodeAndDeletedFalse(String floorCode);
+
+    List<Floor> findByBranchIdAndDeletedFalse(String branchId);
+
+    boolean existsByBranchIdAndFloorCodeAndDeletedFalse(
+            String branchId,
+            String floorCode
+    );
+
+    boolean existsByBranchIdAndFloorCodeAndDeletedFalseAndIdNot(
+            String branchId,
+            String floorCode,
+            String id
+    );
 }
